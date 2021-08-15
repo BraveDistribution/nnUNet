@@ -43,8 +43,6 @@ class MultipleOutputLossMixum(nn.Module):
                     l += weights[i] * (lam * self.loss(pred[i], y_a[i]) + (1 - lam) * self.loss(pred[i], y_b[i]))
             return l
         else:
-            assert isinstance(pred, (tuple, list)), "x must be either tuple or list"
-            assert isinstance(y, (tuple, list)), "y must be either tuple or list"
             if self.weight_factors is None:
                 weights = [1] * len(pred)
             else:
@@ -53,6 +51,6 @@ class MultipleOutputLossMixum(nn.Module):
             l = weights[0] * self.loss(pred[0], y[0])
             for i in range(1, len(pred)):
                 if weights[i] != 0:
-                    l += weights[i] * self.loss(x[i], y[i])
+                    l += weights[i] * self.loss(pred[i], y[i])
             return
 
