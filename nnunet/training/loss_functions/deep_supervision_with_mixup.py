@@ -52,5 +52,5 @@ class MultipleOutputLossMixum(nn.Module):
             for i in range(1, len(pred)):
                 if weights[i] != 0:
                     l += weights[i] * self.loss(pred[i], y[i])
-            return
+            return l
 
