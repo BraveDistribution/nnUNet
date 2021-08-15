@@ -29,16 +29,30 @@ class MultipleOutputLossMixum(nn.Module):
         self.weight_factors = weight_factors
         self.loss = loss
 
-    def forward(self, pred, y, y_a, y_b, lam = 1):
-        assert isinstance(pred, (tuple, list)), "x must be either tuple or list"
-        assert isinstance(y, (tuple, list)), "y must be either tuple or list"
-        if self.weight_factors is None:
-            weights = [1] * len(pred)
+    def forward(self, pred, y, y_a=None, y_b=None, lam = 1):
+        if y_a is not None and y_b is not None:
+            assert isinstance(pred, (tuple, list)), "x must be either tuple or list"
+            assert isinstance(y, (tuple, list)), "y must be either tuple or list"
+            if self.weight_factors is None:
+                weights = [1] * len(pred)
+            else:
+                weights = self.weight_factors
+            l = weights[0] * (lam * self.loss(pred[0], y_a[0]) + (1 - lam) * self.loss(pred[0], y_b[0]))
+            for i in range(1, len(pred)):
+                if weights[i] != 0:
+                    l += weights[i] * (lam * self.loss(pred[i], y_a[i]) + (1 - lam) * self.loss(pred[i], y_b[i]))
+            return l
         else:
-            weights = self.weight_factors
-        l = weights[0] * (lam * self.loss(pred[0], y_a[0]) + (1 - lam) * self.loss(pred[0], y_b[0]))
-        for i in range(1, len(pred)):
-            if weights[i] != 0:
-                l += weights[i] * (lam * self.loss(pred[i], y_a[i]) + (1 - lam) * self.loss(pred[i], y_b[i]))
-        return l
+            assert isinstance(pred, (tuple, list)), "x must be either tuple or list"
+            assert isinstance(y, (tuple, list)), "y must be either tuple or list"
+            if self.weight_factors is None:
+                weights = [1] * len(pred)
+            else:
+                weights = self.weight_factors
+
+            l = weights[0] * self.loss(pred[0], y[0])
+            for i in range(1, len(pred)):
+                if weights[i] != 0:
+                    l += weights[i] * self.loss(x[i], y[i])
+            return
 
