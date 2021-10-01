@@ -40,7 +40,12 @@ def get_moreDA_augmentation(dataloader_train, dataloader_val, patch_size, params
                             soft_ds=False,
                             classes=None, pin_memory=True, regions=None,
                             use_nondetMultiThreadedAugmenter: bool = False):
+
     assert params.get('mirror') is None, "old version of params, use new keyword do_mirror"
+
+    import pickle
+    with open('/tmp/params.pckl', 'wb') as fh:
+        pickle.dump(params, fh)
 
     tr_transforms = []
 
